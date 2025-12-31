@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0b141d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Ultimate Messenger Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- REAL FACE RECOGNITION ENGINE (TensorFlow.js based) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        :root {
+            --winter-bg: #0b141d;
+            --winter-glass: rgba(255, 255, 255, 0.05);
+            --snow-white: #ffffff;
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --panel-bg: #1c1c1e;
+            --input-bg: #252527;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        html.light-mode {
+            --winter-bg: #f0f2f5;
+            --winter-glass: rgba(255, 255, 255, 0.8);
+            --snow-white: #333333;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --panel-bg: #ffffff;
+            --input-bg: #f3f4f6;
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: var(--winter-bg);
+            color: var(--text-primary);
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            overflow: hidden;
+            overscroll-behavior: none;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .fa-solid, .fas, .fa-brands, .fa-regular, .fa {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 900 !important;
+            display: inline-block !important;
+            font-style: normal !important;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .thick-snow {
+            position: relative;
+        }
+        .thick-snow::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -2px;
+            right: -2px;
+            height: 24px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><path d="M0,80 C150,10 350,110 500,40 C650,-30 850,90 1000,20 L1000,0 L0,0 Z" fill="white"/></svg>');
+            background-size: 100% 100%;
+            z-index: 100;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 8px rgba(255,255,255,0.4));
+        }
+
+        /* Fixed Ultra Thick Snow Divider */
+        .ultra-thick-snow-line {
+            position: absolute;
+            bottom: -5px; 
+            left: 0;
+            right: 0;
+            height: 48px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><path d="M0,40 C150,100 300,20 450,90 C600,150 750,40 900,100 C950,120 1000,80 1000,80 L1000,100 L0,100 Z" fill="white"/></svg>');
+            background-size: 100% 100%;
+            z-index: 110;
+            pointer-events: none;
+            filter: drop-shadow(0 -4px 12px rgba(255,255,255,0.5));
+        }
+
+        /* Avatar Frame */
+        .avatar-frame {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            border-radius: 9999px !important; 
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #1c2833;
+        }
+        .avatar-frame img {
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover !important; 
+            display: block !important;
+        }
+
+        /* Snow Animation */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            filter: blur(0.5px);
+            animation: fall linear infinite;
+        }
+        
+        /* Autumn Leaves Animation */
+        .autumn-leaf {
+            position: absolute;
+            top: -20px;
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d97706"><path d="M12 2C8 6 4 10 4 14C4 18.4 7.6 22 12 22C16.4 22 20 18.4 20 14C20 10 16 6 12 2ZM12 20C9.8 20 8 18.2 8 16C8 14.5 9 13 10 12C10.5 11.5 11 11 12 11C13 11 13.5 11.5 14 12C15 13 16 14.5 16 16C16 18.2 14.2 20 12 20Z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(105vh) rotate(360deg); }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .header-snow-container {
+            position: relative;
+            z-index: 60;
+        }
+        
+        .light-mode .text-blue-50 { color: #111827; }
+        
+        /* Red X Warning Animation */
+        @keyframes big-red-x {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+        .warning-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .big-x {
+            font-size: 20rem;
+            color: rgba(220, 38, 38, 0.9);
+            animation: big-red-x 2s ease-in-out forwards;
+            text-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+        
+        /* Loading Spinner */
+        .initial-loader {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0b141d;
+            z-index: 99999;
+            color: white;
+            transition: opacity 0.5s;
+        }
+        .loader-icon {
+            font-size: 4rem;
+            color: #24A1DE;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/client": "https://esm.sh/react-dom@19.2.3/client",
+    "react-dom/": "https://esm.sh/react-dom@19.2.3/",
+    "react/": "https://esm.sh/react@19.2.3/",
+    "react": "https://esm.sh/react@19.2.3"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="text-gray-100">
+    <div id="root">
+        <div class="initial-loader">
+            <i class="fa-solid fa-snowflake loader-icon"></i>
+            <h2 style="margin-top: 20px; font-family: sans-serif; font-weight: 800; letter-spacing: 2px;">ULTIMATE PRO</h2>
+        </div>
+    </div>
+    <script type="module" src="./index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

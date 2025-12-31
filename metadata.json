@@ -1,0 +1,8 @@
+{
+  "name": "Ultimate Messenger Pro",
+  "description": "A high-fidelity React-based messenger with real-time simulations, stories, and advanced chat features.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
